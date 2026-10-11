@@ -2,59 +2,10 @@ name: ISS Location Tracker
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17 * * * *"
-
-permissions:
-  contents: write
 
 jobs:
-  track-iss:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
       - name: 24f2006246@ds.study.iitm.ac.in
-        run: |
-          python - <<'PY'
-          import json
-          import urllib.request
-          from datetime import datetime, timezone
-
-          url = "https://api.wheretheiss.at/v1/satellites/25544"
-          request = urllib.request.Request(
-              url, headers={"User-Agent": "roxettaa-iss-tracker"}
-          )
-          with urllib.request.urlopen(request, timeout=20) as response:
-              position = json.load(response)
-
-          record = {
-              "recorded_at": datetime.now(timezone.utc).isoformat(),
-              "latitude": position["latitude"],
-              "longitude": position["longitude"],
-              "altitude_km": position.get("altitude"),
-          }
-
-          with open("iss-location.jsonl", "a", encoding="utf-8") as f:
-              f.write(json.dumps(record) + "\n")
-
-          print(json.dumps(record, indent=2))
-          PY
-
-      - name: Commit ISS location
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add iss-location.jsonl
-          if git diff --cached --quiet; then
-            echo "No new changes to commit."
-          else
-            git commit -m "Update ISS position data [skip ci]"
-            git push
-          fi
+        run: echo "Action successful!"
